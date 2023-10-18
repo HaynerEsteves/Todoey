@@ -11,6 +11,9 @@ class TodoListViewController: UITableViewController {
 
     let itemArray: [String] = ["buy eggs", "fazer as coisas do pai", "Estudar Swift"]
     
+
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -35,4 +38,21 @@ extension TodoListViewController {
         
     }
     
+}
+
+//MARK: - TableView Delegate
+//not necessary to put the delegate in place since the view is of type tableviewcontroler, that enherits from UITableViewController insted of adding a tableview to a ViewController
+extension TodoListViewController {
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //print(itemArray[indexPath.row])//printing the item on the array by getting the row of the selected cell
+        tableView.deselectRow(at: indexPath, animated: true)//making it stop beeing grey after selection. better behavior
+        
+        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
+            tableView.cellForRow(at: indexPath)?.accessoryType = .none
+        } else {
+            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
+        }
+        
+    }
 }
