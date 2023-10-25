@@ -8,12 +8,19 @@
 
 import UIKit
 class TodoListViewController: UITableViewController {
-
-    var itemArray: [String] = ["buy eggs", "fazer as coisas do pai", "Estudar Swift"]
+    //fazer uma classe nova, com o item adicionado e o status de marcação. Ao fazer o apend, criaremos um item dessa classe e daremos o append no array inicial (atualmente [String] futuramente [novaClasse]. pra usar o check-unckeck no delegate usar o array inicial[indexRol].ckeckStatus e ver se ta true ou false
+    var itemArray: [Item] = []
+    // use of defaults, 1-create object, 2-save object, 3-retrieve object
+    //let defaults = UserDefaults.standard
     
-        override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+        //use of defaults 3-retrieve object
+        //if let storedItems = defaults.array(forKey: K.defaultsKey) as? [Item] {
+        //    itemArray = storedItems
+        //}
     }
     
     
@@ -37,13 +44,25 @@ class TodoListViewController: UITableViewController {
         
         //create alert button for action inside the alert "add item". is the button name
         let action = UIAlertAction(title: "Add Item", style: .default) { action in
-            self.itemArray.append(textField.text ?? "N fez o append")
+            let newItem = Item(CheckStatus: false, Description: textField.text ?? "Item não adicionado")
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            self.itemArray.append(newItem)
+            
+
+            // use of defaults 2-save object, 3-retrieve object
+            //self.defaults.set(self.itemArray, forKey: K.defaultsKey)
+            
             self.tableView.reloadData()
         }
+        
         //adding the button to the alert
         alert.addAction(action)
-        
-        
         
         //presenting the textfield to the user
         present(alert, animated: true)
@@ -54,7 +73,7 @@ class TodoListViewController: UITableViewController {
 
 
 
-//MARK: - DataSource Delegate
+//MARK: - Tableview DataSource Methods
 
 extension TodoListViewController {
     
@@ -64,16 +83,23 @@ extension TodoListViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //creating reusablecell
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)//add the "for: indexPath" method for non optional return > Option click on cell
-        cell.textLabel?.text = itemArray[indexPath.row] //setting label on cell for String "itemArray[indexPath.row]"
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) //add the "for: indexPath" method for non optional return
+        //for shorter code
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.Description //setting label on cell for String "itemArray[indexPath.row]"
+        
+        //Ternary Operator > It substitutes all the if else code for bool value. Instead of: if item == false {item = true} else {item = false}
+        //value = condition == true ? ValueIfTrue : ValueIfFalse
+        //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
+        cell.accessoryType = item.CheckStatus ? .checkmark : .none
         
         return cell
-        
     }
     
 }
 
-//MARK: - TableView Delegate
+//MARK: - TableView Delegate Methods
 //not necessary to put the delegate in place since the view is of type tableviewcontroler, that enherits from UITableViewController insted of adding a tableview to a ViewController
 extension TodoListViewController {
     
@@ -81,12 +107,10 @@ extension TodoListViewController {
         //print(itemArray[indexPath.row])//printing the item on the array by getting the row of the selected cell
         tableView.deselectRow(at: indexPath, animated: true)//making it stop beeing grey after selection. better behavior
         
-        //check if the
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
+        //since the line below is a bool, we can change the if item == false { iten = true } else {iten = false}.
+        //this line changes tha state of the checkStatus upon selectioin of cell on the tableview.
+        itemArray[indexPath.row].CheckStatus = !itemArray[indexPath.row].CheckStatus
         
+        tableView.reloadData()
     }
 }
