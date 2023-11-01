@@ -8,12 +8,12 @@
 
 import Foundation
 
-class Item {
-    var CheckStatus: Bool
-    let Description: String
+// For the class to conform to encodable all its propertys must have standarts data types. (Int, String, Bool, Float, etc)
+class Item: Codable {
+    var checkStatus: Bool = false
+    let title: String
     
-    init(CheckStatus: Bool, Description: String) {
-        self.CheckStatus = CheckStatus
-        self.Description = Description
+    init(Description: String) {
+        self.title = Description
     }
 }

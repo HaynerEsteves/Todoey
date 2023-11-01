@@ -8,19 +8,26 @@
 
 import UIKit
 class TodoListViewController: UITableViewController {
-    //fazer uma classe nova, com o item adicionado e o status de marcação. Ao fazer o apend, criaremos um item dessa classe e daremos o append no array inicial (atualmente [String] futuramente [novaClasse]. pra usar o check-unckeck no delegate usar o array inicial[indexRol].ckeckStatus e ver se ta true ou false
+    
     var itemArray: [Item] = []
-    // use of defaults, 1-create object, 2-save object, 3-retrieve object
-    //let defaults = UserDefaults.standard
+    
+    // use of userDefaults, 1-create object, 2-save object, 3-retrieve object
+    // let defaults = UserDefaults.standard
+    
+    // trying to save data that is a custom data type (Item) user defafaults wont work. Trying with the FileManager.
+    //1- creating filepath for saving information on the users phone
+    //this is also the path for the plist(named item.plist). It will be used when necessary, but does not create the file itself. only the path
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
-        
-        //use of defaults 3-retrieve object
+        //use of UderDefaults 3-retrieve object
         //if let storedItems = defaults.array(forKey: K.defaultsKey) as? [Item] {
         //    itemArray = storedItems
         //}
+        
+        loadItems()
+   
     }
     
     
@@ -42,21 +49,15 @@ class TodoListViewController: UITableViewController {
             textField = alertTextField
         }
         
-        //create alert button for action inside the alert "add item". is the button name
+        //create alert button for action inside the alert "add item". is the button name. to be later added to the alert
         let action = UIAlertAction(title: "Add Item", style: .default) { action in
-            let newItem = Item(CheckStatus: false, Description: textField.text ?? "Item não adicionado")
+            let newItem = Item(Description: textField.text ?? "Item não adicionado")
             self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            self.itemArray.append(newItem)
-            
 
             // use of defaults 2-save object, 3-retrieve object
             //self.defaults.set(self.itemArray, forKey: K.defaultsKey)
+            
+            self.saveItems()
             
             self.tableView.reloadData()
         }
@@ -67,6 +68,37 @@ class TodoListViewController: UITableViewController {
         //presenting the textfield to the user
         present(alert, animated: true)
         //self.tableView.reloadData()
+    }
+    
+    //function to encode and create/write the plist file
+    func saveItems() {
+        
+        // To save itens with custom classes (Item), user defaluts wont work. Use File Manager
+        // after creating the URL where tha plist file will be saved. we need to encode the data, then write it (create the file)
+        // Creating data Encoder
+        let encoder = PropertyListEncoder()
+        
+        do {
+            //encoding item array data so it can be written. Encode needs a Try, that needs a do-catch block
+            let data = try encoder.encode(itemArray)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print("Error encoding data: \(error)")
+        }
+    }
+    
+    func loadItems() {
+        if let data = try? Data(contentsOf: dataFilePath!){
+            
+            let decoder = PropertyListDecoder()
+            
+            do {
+                itemArray = try decoder.decode([Item].self, from: data)
+            } catch {
+                print(error)
+            }
+            
+        }
     }
     
 }
@@ -87,12 +119,12 @@ extension TodoListViewController {
         //for shorter code
         let item = itemArray[indexPath.row]
         
-        cell.textLabel?.text = item.Description //setting label on cell for String "itemArray[indexPath.row]"
+        cell.textLabel?.text = item.title //setting label on cell for String "itemArray[indexPath.row]"
         
         //Ternary Operator > It substitutes all the if else code for bool value. Instead of: if item == false {item = true} else {item = false}
         //value = condition == true ? ValueIfTrue : ValueIfFalse
         //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
-        cell.accessoryType = item.CheckStatus ? .checkmark : .none
+        cell.accessoryType = item.checkStatus ? .checkmark : .none
         
         return cell
     }
@@ -109,7 +141,9 @@ extension TodoListViewController {
         
         //since the line below is a bool, we can change the if item == false { iten = true } else {iten = false}.
         //this line changes tha state of the checkStatus upon selectioin of cell on the tableview.
-        itemArray[indexPath.row].CheckStatus = !itemArray[indexPath.row].CheckStatus
+        itemArray[indexPath.row].checkStatus = !itemArray[indexPath.row].checkStatus
+        
+        saveItems()
         
         tableView.reloadData()
     }
