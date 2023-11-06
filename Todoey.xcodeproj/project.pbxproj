@@ -13,7 +13,6 @@
 		EB2BE503239524DC00FB933B /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE502239524DC00FB933B /* Assets.xcassets */; };
 		EB2BE506239524DC00FB933B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EB2BE504239524DC00FB933B /* LaunchScreen.storyboard */; };
 		F6057DD72AF2D8440077FC1D /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F6057DD52AF2D8440077FC1D /* DataModel.xcdatamodeld */; };
-		F6CB1F0C2AE8592400D05740 /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB1F0B2AE8592400D05740 /* Item.swift */; };
 		F6CB1F0E2AE860AC00D05740 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6CB1F0D2AE860AC00D05740 /* Constants.swift */; };
 /* End PBXBuildFile section */
 
@@ -26,7 +25,6 @@
 		EB2BE505239524DC00FB933B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		EB2BE507239524DC00FB933B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F6057DD62AF2D8440077FC1D /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
-		F6CB1F0B2AE8592400D05740 /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
 		F6CB1F0D2AE860AC00D05740 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -82,7 +80,6 @@
 		F6A866972AE98D76005D45BC /* Data Model */ = {
 			isa = PBXGroup;
 			children = (
-				F6CB1F0B2AE8592400D05740 /* Item.swift */,
 				F6057DD52AF2D8440077FC1D /* DataModel.xcdatamodeld */,
 			);
 			path = "Data Model";
@@ -178,7 +175,6 @@
 			files = (
 				EB2BE4FE239524DB00FB933B /* TodoListViewController.swift in Sources */,
 				F6057DD72AF2D8440077FC1D /* DataModel.xcdatamodeld in Sources */,
-				F6CB1F0C2AE8592400D05740 /* Item.swift in Sources */,
 				EB2BE4FA239524DB00FB933B /* AppDelegate.swift in Sources */,
 				F6CB1F0E2AE860AC00D05740 /* Constants.swift in Sources */,
 			);
