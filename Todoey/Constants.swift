@@ -9,6 +9,7 @@
 import Foundation
 
 class K {
-     static let defaultsKey: String = "NewTodoListArray"
-    
+    static let defaultsKey: String = "NewTodoListArray"
+    static let titleAttribute: String = "title"
+    static let checkStatusAttribute: String = "checkStatus"
 }

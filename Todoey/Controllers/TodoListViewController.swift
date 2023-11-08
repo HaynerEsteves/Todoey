@@ -36,13 +36,50 @@ class TodoListViewController: UITableViewController {
         //if let storedItems = defaults.array(forKey: K.defaultsKey) as? [Item] {
         //    itemArray = storedItems
         //}
-        
         loadItems()
-        
     }
     
+    //MARK: - Tableview DataSource Methods
     
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return itemArray.count
+    }
     
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        //creating reusablecell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) //add the "for: indexPath" method for non optional return
+        //for shorter code
+        let item = itemArray[indexPath.row]
+        
+        cell.textLabel?.text = item.title //setting label on cell for String "itemArray[indexPath.row]"
+        
+        //Ternary Operator > It substitutes all the if else code for bool value. Instead of: if item == false {item = true} else {item = false}
+        //value = condition == true ? ValueIfTrue : ValueIfFalse
+        //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
+        cell.accessoryType = item.checkStatus ? .checkmark : .none
+        
+        return cell
+    }
+    
+    //MARK: - TableView Delegate Methods
+    //not necessary to put the delegate in place since the view is of type tableviewcontroler, that enherits from UITableViewController insted of adding a tableview to a ViewController
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        //print(itemArray[indexPath.row])//printing the item on the array by getting the row of the selected cell
+        tableView.deselectRow(at: indexPath, animated: true)//making it stop beeing grey after selection. better behavior
+        
+        //since the line below is a bool, we can change the if item == false { iten = true } else {iten = false}.
+        //this line changes tha state of the checkStatus upon selectioin of cell on the tableview.
+        itemArray[indexPath.row].checkStatus = !itemArray[indexPath.row].checkStatus
+        
+        //to delete from the core data just specify the array position to delete it
+        //context.delete(itemArray[indexPath.row])
+        //itemArray.remove(at: indexPath.row)
+        
+        saveItems()
+        
+        tableView.reloadData()
+    }
     
     //MARK: - Add New Itens
     
@@ -88,6 +125,9 @@ class TodoListViewController: UITableViewController {
         //self.tableView.reloadData()
     }
     
+    
+    //MARK: - Model Manipulation Methods
+    
     //function to encode and create/write the plist file
     func saveItems() {
         
@@ -109,66 +149,43 @@ class TodoListViewController: UITableViewController {
         }
     }
     
-    
-    func loadItems() {
+    //in this func is provided a default value in case request is not provided
+    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
         //1- fetch the data inside the coreData
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
         do{
             itemArray = try context.fetch(request)//method to load the data from the Coredata.
         }catch {
             print("error on loading data \(error)")
         }
-        
-    }
-}
-
-
-
-
-//MARK: - Tableview DataSource Methods
-
-extension TodoListViewController {
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return itemArray.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        //creating reusablecell
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) //add the "for: indexPath" method for non optional return
-        //for shorter code
-        let item = itemArray[indexPath.row]
-        
-        cell.textLabel?.text = item.title //setting label on cell for String "itemArray[indexPath.row]"
-        
-        //Ternary Operator > It substitutes all the if else code for bool value. Instead of: if item == false {item = true} else {item = false}
-        //value = condition == true ? ValueIfTrue : ValueIfFalse
-        //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
-        cell.accessoryType = item.checkStatus ? .checkmark : .none
-        
-        return cell
-    }
-    
-}
-
-//MARK: - TableView Delegate Methods
-//not necessary to put the delegate in place since the view is of type tableviewcontroler, that enherits from UITableViewController insted of adding a tableview to a ViewController
-extension TodoListViewController {
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(itemArray[indexPath.row])//printing the item on the array by getting the row of the selected cell
-        tableView.deselectRow(at: indexPath, animated: true)//making it stop beeing grey after selection. better behavior
-        
-        //since the line below is a bool, we can change the if item == false { iten = true } else {iten = false}.
-        //this line changes tha state of the checkStatus upon selectioin of cell on the tableview.
-        itemArray[indexPath.row].checkStatus = !itemArray[indexPath.row].checkStatus
-        
-        //to delete from the core data just specify the array position to delete it
-        //context.delete(itemArray[indexPath.row])
-        //itemArray.remove(at: indexPath.row)
-        
-        saveItems()
-        
         tableView.reloadData()
+    }
+    
+}
+
+//MARK: - SearchBar Methods
+
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        //adding predicate to the request (Filter)
+        //"name CONTAINS[cd] %@" is a format string for coredata use
+        request.predicate = NSPredicate(format: "\(K.titleAttribute) CONTAINS[cd] %@", searchBar.text!)
+        
+        //Adding sort to the result. sortDescriptions expect an array of sorting [age, price, gender] in this case its only 1 item on the array the NSSort...
+        request.sortDescriptors = [NSSortDescriptor(key: "\(K.titleAttribute)", ascending: true)]
+        
+        loadItems(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
     }
 }
