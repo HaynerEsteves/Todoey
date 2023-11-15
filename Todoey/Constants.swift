@@ -12,4 +12,5 @@ class K {
     static let defaultsKey: String = "NewTodoListArray"
     static let titleAttribute: String = "title"
     static let checkStatusAttribute: String = "checkStatus"
+    static let categoryCell: String = "CategoryCell"
 }
