@@ -21,7 +21,7 @@ class TodoListViewController: UITableViewController {
     //this is also the path for the plist(named item.plist). It will be used when necessary, but does not create the file itself. only the path
     //let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
     
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+    //let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
     
     //this is how we tap into the persistentContainer inside AppDelegate to use its context
     //Normaly ut would be like AppDelegateObject.PersistentContainer.viewConttext, but UIApplication.shared.delegate as! AppDelegate is how we create this object. With a singleton
@@ -30,13 +30,20 @@ class TodoListViewController: UITableViewController {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     
+    var selectedCategory : Category? {
+        didSet {
+            loadItems()
+        }
+    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         //use of UderDefaults 3-retrieve object
         //if let storedItems = defaults.array(forKey: K.defaultsKey) as? [Item] {
         //    itemArray = storedItems
         //}
-        loadItems()
+        
     }
     
     //MARK: - Tableview DataSource Methods
@@ -107,6 +114,7 @@ class TodoListViewController: UITableViewController {
             let newItem = Item(context: self.context)
             newItem.title = textField.text
             newItem.checkStatus = false
+            newItem.parentCategory = self.selectedCategory
             self.itemArray.append(newItem)
             
             // use of defaults 2-save object, 3-retrieve object
@@ -150,8 +158,19 @@ class TodoListViewController: UITableViewController {
     }
     
     //in this func is provided a default value in case request is not provided
-    func loadItems(with request: NSFetchRequest<Item> = Item.fetchRequest()) {
+    func loadItems(with predicate: NSPredicate? = nil) {
         //1- fetch the data inside the coreData
+        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        let categoryPredicate = NSPredicate(format: "parentCategory == %@", selectedCategory!)
+        
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [additionalPredicate, categoryPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
+        request.sortDescriptors = [NSSortDescriptor(key: "checkStatus", ascending: true)]
+        
         do{
             itemArray = try context.fetch(request)//method to load the data from the Coredata.
         }catch {
@@ -166,17 +185,16 @@ class TodoListViewController: UITableViewController {
 
 extension TodoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        
-        let request: NSFetchRequest<Item> = Item.fetchRequest()
+        ////let request: NSFetchRequest<Item> = Item.fetchRequest()
         
         //adding predicate to the request (Filter)
         //"name CONTAINS[cd] %@" is a format string for coredata use
-        request.predicate = NSPredicate(format: "\(K.titleAttribute) CONTAINS[cd] %@", searchBar.text!)
+        let searchPredicate = NSPredicate(format: "\(K.titleAttribute) CONTAINS[cd] %@", searchBar.text!)
         
         //Adding sort to the result. sortDescriptions expect an array of sorting [age, price, gender] in this case its only 1 item on the array the NSSort...
-        request.sortDescriptors = [NSSortDescriptor(key: "\(K.titleAttribute)", ascending: true)]
+        ////request.sortDescriptors = [NSSortDescriptor(key: "\(K.titleAttribute)", ascending: true)]
         
-        loadItems(with: request)
+        loadItems(with: searchPredicate)
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
