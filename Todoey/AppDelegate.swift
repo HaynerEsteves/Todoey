@@ -20,15 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         print(Realm.Configuration.defaultConfiguration.fileURL)// locate where the realm file got created
         
-        let data = Data()
-        data.age = 33
-        data.name = "Hayner"
-        
         do{
             let realm = try Realm()//realm object for later use
-            try realm.write {//method that makes the change to the database
-                realm.add(data)//operation on the DB. also Delete, update etc.
-            }
         } catch{
             print("erro trying to acess Reaml DB: \(error)")
         }

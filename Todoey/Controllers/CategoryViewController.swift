@@ -7,14 +7,15 @@
 //
 
 import UIKit
-import CoreData
 import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArray: [Category] = []
+    var categoryArray: Results<Category>?//since its a auto updated container it does not neet to be appended. it will listen for changes
     
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    let realm = try! Realm()//try! is only possible because realm can only fail in the first run. Its in Realm Documentation. But seems like code smell. Creating realm object
+    
+    //let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -24,13 +25,13 @@ class CategoryViewController: UITableViewController {
     //MARK: - TableView DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray.count
+        return categoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categoryArray[indexPath.row].name
+        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories Added Yet"
         return cell
     }
     
@@ -43,7 +44,7 @@ class CategoryViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! TodoListViewController
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categoryArray[indexPath.row]
+            destinationVC.selectedCategory = categoryArray?[indexPath.row]
         }
     }
     
@@ -60,12 +61,10 @@ class CategoryViewController: UITableViewController {
         }
         
         let action = UIAlertAction(title: "Add", style: .default) { alertAction in
-            let newCategory = Category(context: self.context)
-            newCategory.name = textField.text
+            let newCategory = Category()
+            newCategory.name = textField.text!
             
-            self.categoryArray.append(newCategory)
-            
-            self.saveCategories()
+            self.saveCategories(with: newCategory)
         }
         
         alert.addAction(action)
@@ -74,9 +73,11 @@ class CategoryViewController: UITableViewController {
     
     //MARK: - Data Manipulation
     
-    func saveCategories() {
+    func saveCategories(with category: Category) {
         do {
-            try self.context.save()
+            try realm.write {
+                realm.add(category)
+            }
         } catch {
             print("error saving category on DataModel\(error)")
         }
@@ -84,19 +85,23 @@ class CategoryViewController: UITableViewController {
         self.tableView.reloadData()
     }
     
-    func loadCategories(with request: NSFetchRequest<Category> = Category.fetchRequest()) {
-        
+    func loadCategories() {
+
+        categoryArray = realm.objects(Category.self)
+        tableView.reloadData()
+/*
         do {
             categoryArray = try context.fetch(request)
         } catch {
             print("error loadign data from DataModel: \(error)")
         }
         tableView.reloadData()
+*/
     }
 }
 
 //MARK: - SearchBar Methods
-
+/*
 extension CategoryViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -118,3 +123,4 @@ extension CategoryViewController: UISearchBarDelegate {
         }
     }
 }
+*/

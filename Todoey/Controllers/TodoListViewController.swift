@@ -32,7 +32,7 @@ class TodoListViewController: UITableViewController {
     
     var selectedCategory : Category? {
         didSet {
-            loadItems()
+            //loadItems()
         }
     }
     
@@ -110,7 +110,7 @@ class TodoListViewController: UITableViewController {
             //creating item using plist storage method. method File manager
             //let newItem = Item(Description: textField.text ?? "Error adding item")
             
-            
+/*
             let newItem = Item(context: self.context)
             newItem.title = textField.text
             newItem.checkStatus = false
@@ -121,7 +121,7 @@ class TodoListViewController: UITableViewController {
             //self.defaults.set(self.itemArray, forKey: K.defaultsKey)
             
             self.saveItems()
-            
+*/
             self.tableView.reloadData()
         }
         
@@ -156,7 +156,7 @@ class TodoListViewController: UITableViewController {
             print("Error saving data: \(error)")
         }
     }
-    
+/*
     //in this func is provided a default value in case request is not provided
     func loadItems(with predicate: NSPredicate? = nil) {
         //1- fetch the data inside the coreData
@@ -178,11 +178,11 @@ class TodoListViewController: UITableViewController {
         }
         tableView.reloadData()
     }
-    
+*/
 }
 
 //MARK: - SearchBar Methods
-
+/*
 extension TodoListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         ////let request: NSFetchRequest<Item> = Item.fetchRequest()
@@ -207,3 +207,4 @@ extension TodoListViewController: UISearchBarDelegate {
         }
     }
 }
+*/
