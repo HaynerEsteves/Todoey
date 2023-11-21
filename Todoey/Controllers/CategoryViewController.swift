@@ -17,7 +17,6 @@ class CategoryViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //JUST SAVED THE DATA ON THE DATAMODEL. CONTINUE FROM THERE LOADING THE DATA
         loadCategories()
     }
     
