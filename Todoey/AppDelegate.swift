@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import RealmSwift
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -16,6 +17,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        print(Realm.Configuration.defaultConfiguration.fileURL)// locate where the realm file got created
+        
+        let data = Data()
+        data.age = 33
+        data.name = "Hayner"
+        
+        do{
+            let realm = try Realm()//realm object for later use
+            try realm.write {//method that makes the change to the database
+                realm.add(data)//operation on the DB. also Delete, update etc.
+            }
+        } catch{
+            print("erro trying to acess Reaml DB: \(error)")
+        }
+        
         return true
     }
 
