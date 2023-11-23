@@ -11,7 +11,7 @@ import RealmSwift
 
 class CategoryViewController: UITableViewController {
     
-    var categoryArray: Results<Category>?//since its a auto updated container it does not neet to be appended. it will listen for changes
+    var category: Results<Category>?//since its a auto updated container it does not neet to be appended. it will listen for changes
     
     let realm = try! Realm()//try! is only possible because realm can only fail in the first run. Its in Realm Documentation. But seems like code smell. Creating realm object
     
@@ -25,13 +25,13 @@ class CategoryViewController: UITableViewController {
     //MARK: - TableView DataSource Methods
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return categoryArray?.count ?? 1
+        return category?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        cell.textLabel?.text = categoryArray?[indexPath.row].name ?? "No Categories Added Yet"
+        cell.textLabel?.text = category?[indexPath.row].name ?? "No Categories Added Yet"
         return cell
     }
     
@@ -44,7 +44,7 @@ class CategoryViewController: UITableViewController {
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destinationVC = segue.destination as! TodoListViewController
         if let indexPath = tableView.indexPathForSelectedRow {
-            destinationVC.selectedCategory = categoryArray?[indexPath.row]
+            destinationVC.selectedCategory = category?[indexPath.row]
         }
     }
     
@@ -87,11 +87,11 @@ class CategoryViewController: UITableViewController {
     
     func loadCategories() {
 
-        categoryArray = realm.objects(Category.self)
+        category = realm.objects(Category.self)
         tableView.reloadData()
 /*
         do {
-            categoryArray = try context.fetch(request)
+            category = try context.fetch(request)
         } catch {
             print("error loadign data from DataModel: \(error)")
         }
