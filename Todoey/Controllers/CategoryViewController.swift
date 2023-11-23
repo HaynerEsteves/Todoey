@@ -101,16 +101,15 @@ class CategoryViewController: UITableViewController {
 }
 
 //MARK: - SearchBar Methods
-/*
+
 extension CategoryViewController: UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let request: NSFetchRequest<Category> = Category.fetchRequest()
         
-        request.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
-        request.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        
-        loadCategories(with: request)
+        category = category?
+            .filter("name CONTAINS[cd] %@", searchBar.text!)
+            .sorted(byKeyPath: "name", ascending: true)
+        tableView.reloadData()
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
@@ -123,4 +122,4 @@ extension CategoryViewController: UISearchBarDelegate {
         }
     }
 }
-*/
+

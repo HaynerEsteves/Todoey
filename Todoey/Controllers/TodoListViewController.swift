@@ -76,7 +76,7 @@ class TodoListViewController: UITableViewController {
         //print(itemArray[indexPath.row])//printing the item on the array by getting the row of the selected cell
         tableView.deselectRow(at: indexPath, animated: true)//making it stop beeing grey after selection. better behavior
         
-        
+        //se não tiver nulo, execute a troca do statusCheck
         if let item = todoItems?[indexPath.row] {
             do {
                 try realm.write {
@@ -125,7 +125,9 @@ class TodoListViewController: UITableViewController {
                 do {
                     try self.realm.write {
                         let newItem = Item()
+                        //as modificações sempre devem ser feitas dentro do realm.write{}
                         newItem.title = textField.text!
+                        newItem.dateCreated = Date()
                         currentCategory.item.append(newItem)
                     }
                 } catch {
@@ -159,29 +161,35 @@ class TodoListViewController: UITableViewController {
 }
 
 //MARK: - SearchBar Methods
-/*
- extension TodoListViewController: UISearchBarDelegate {
- func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
- ////let request: NSFetchRequest<Item> = Item.fetchRequest()
- 
- //adding predicate to the request (Filter)
- //"name CONTAINS[cd] %@" is a format string for coredata use
- let searchPredicate = NSPredicate(format: "\(K.titleAttribute) CONTAINS[cd] %@", searchBar.text!)
- 
- //Adding sort to the result. sortDescriptions expect an array of sorting [age, price, gender] in this case its only 1 item on the array the NSSort...
- ////request.sortDescriptors = [NSSortDescriptor(key: "\(K.titleAttribute)", ascending: true)]
- 
- loadItems(with: searchPredicate)
- }
- 
- func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
- if searchBar.text?.count == 0 {
- loadItems()
- 
- DispatchQueue.main.async {
- searchBar.resignFirstResponder()
- }
- }
- }
- }
- */
+
+extension TodoListViewController: UISearchBarDelegate {
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        
+        todoItems = todoItems?
+            .filter("title CONTAINS [cd] %@", searchBar.text!)
+            .sorted(byKeyPath: "dateCreated", ascending: false)
+            tableView.reloadData()
+    }
+        //let request: NSFetchRequest<Item> = Item.fetchRequest()
+        
+        //adding predicate to the request (Filter)
+        //"name CONTAINS[cd] %@" is a format string for coredata use
+        //let searchPredicate = NSPredicate(format: "\(K.titleAttribute) CONTAINS[cd] %@", searchBar.text!)
+        
+        //Adding sort to the result. sortDescriptions expect an array of sorting [age, price, gender] in this case its only 1 item on the array the NSSort...
+        //request.sortDescriptors = [NSSortDescriptor(key: "\(K.titleAttribute)", ascending: true)]
+        
+        //loadItems(with: searchPredicate)
+    
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadItems()
+            
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+    }
+}
+

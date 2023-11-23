@@ -21,7 +21,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print(Realm.Configuration.defaultConfiguration.fileURL)// locate where the realm file got created
         
         do{
-            let realm = try Realm()//realm object for later use
+            let realm = try Realm()//realm object for safe inicialization.
         } catch{
             print("erro trying to acess Reaml DB: \(error)")
         }
