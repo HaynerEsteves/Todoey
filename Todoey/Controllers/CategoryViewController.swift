@@ -89,14 +89,6 @@ class CategoryViewController: UITableViewController {
 
         category = realm.objects(Category.self)
         tableView.reloadData()
-/*
-        do {
-            category = try context.fetch(request)
-        } catch {
-            print("error loadign data from DataModel: \(error)")
-        }
-        tableView.reloadData()
-*/
     }
 }
 
