@@ -9,7 +9,7 @@
 import UIKit
 import RealmSwift
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: SwipeTableViewController {
     
     var todoItems: Results<Item>?
     let realm = try! Realm()
@@ -32,7 +32,7 @@ class TodoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         //creating reusablecell
-        let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath) //add the "for: indexPath" method for non optional return
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         //for shorter code
         if let item = todoItems?[indexPath.row] {
             cell.textLabel?.text = item.title //setting label on cell for String "itemArray[indexPath.row]"
@@ -111,7 +111,7 @@ class TodoListViewController: UITableViewController {
         present(alert, animated: true)
     }
     
-    //MARK: - Model Manipulation Methods
+    //MARK: - Data Manipulation
     
     func loadItems() {
         //a função load deve passar os itens para o todoItems. cada category tem uma lista de itens dentro q pode ser visualzada e dada append. aqui é como é visualizada
@@ -119,6 +119,21 @@ class TodoListViewController: UITableViewController {
         todoItems = selectedCategory?.item.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
     }
+    
+    override func updateModel(at indexPath: IndexPath) {
+
+        if let itemForDeletion = selectedCategory?.item[indexPath.row] {
+            do {
+                try realm.write {
+                    realm.delete(itemForDeletion)
+                }
+            } catch {
+                print("erro deleting item \(error)")
+            }
+        }
+
+    }
+    
 }
 
 //MARK: - SearchBar Methods
