@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class TodoListViewController: SwipeTableViewController {
     
@@ -34,14 +35,18 @@ class TodoListViewController: SwipeTableViewController {
         //creating reusablecell
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         //for shorter code
-        if let item = todoItems?[indexPath.row] {
-            cell.textLabel?.text = item.title //setting label on cell for String "itemArray[indexPath.row]"
+        if let items = todoItems {
+            cell.textLabel?.text = items[indexPath.row].title //setting label on cell for String "itemArray[indexPath.row]"
             
             //Ternary Operator > It substitutes all the if else code for bool value. Instead of: if item == false {item = true} else {item = false}
             //value = condition == true ? ValueIfTrue : ValueIfFalse
             //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
-            cell.accessoryType = item.checkStatus ? .checkmark : .none
-            cell.backgroundColor = UIColor(hexString: item.hexItemColor)
+            cell.accessoryType = items[indexPath.row].checkStatus ? .checkmark : .none
+            
+            let color = UIColor.flatWhite().darken(byPercentage: CGFloat(indexPath.row) / CGFloat(items.count))
+            cell.backgroundColor = color
+            cell.textLabel?.textColor = ContrastColorOf(color ?? .white, returnFlat: true)
+            
         } else {
             cell.textLabel?.text = "no items added"
         }
@@ -118,7 +123,7 @@ class TodoListViewController: SwipeTableViewController {
     func loadItems() {
         //a função load deve passar os itens para o todoItems. cada category tem uma lista de itens dentro q pode ser visualzada e dada append. aqui é como é visualizada
         //sorted é uma caracteristica de List de realm
-        todoItems = selectedCategory?.item.sorted(byKeyPath: "title", ascending: true)
+        todoItems = selectedCategory?.item.sorted(byKeyPath: "dateCreated", ascending: true)
         tableView.reloadData()
     }
     
@@ -133,7 +138,7 @@ class TodoListViewController: SwipeTableViewController {
                 print("erro deleting item \(error)")
             }
         }
-
+        
     }
     
 }
