@@ -36,7 +36,10 @@ class CategoryViewController: SwipeTableViewController {
         if let safeCategory = category?[indexPath.row] {
             cell.textLabel?.text = safeCategory.name
             
-            cell.backgroundColor = UIColor(hexString: safeCategory.hexCategoryColor)
+            let color = UIColor(hexString: safeCategory.hexCategoryColor)
+            cell.backgroundColor = color
+            cell.textLabel?.textColor = ContrastColorOf(color ?? .black, returnFlat: true)
+            
         } else {
             print("erro loading cells in tableVielCellForRowAt")
             cell.textLabel?.text = "error cell"

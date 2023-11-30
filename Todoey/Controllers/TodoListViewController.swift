@@ -43,9 +43,12 @@ class TodoListViewController: SwipeTableViewController {
             //Value = Condition ? ValueIfTrue : ValueIfFalse (Even shorter version)
             cell.accessoryType = items[indexPath.row].checkStatus ? .checkmark : .none
             
-            let color = UIColor.flatWhite().darken(byPercentage: CGFloat(indexPath.row) / CGFloat(items.count))
-            cell.backgroundColor = color
-            cell.textLabel?.textColor = ContrastColorOf(color ?? .white, returnFlat: true)
+            //UIColor.flatWhite().darken(byPercentage: CGFloat(indexPath.row) / CGFloat(items.count))
+            if let color = UIColor(hexString: selectedCategory!.hexCategoryColor)?.darken(byPercentage: CGFloat(indexPath.row) / CGFloat(todoItems!.count)) {
+                cell.backgroundColor = color
+                cell.textLabel?.textColor = ContrastColorOf(color, returnFlat: true)
+            }
+            
             
         } else {
             cell.textLabel?.text = "no items added"
@@ -101,7 +104,6 @@ class TodoListViewController: SwipeTableViewController {
                         //as modificações sempre devem ser feitas dentro do realm.write{}
                         newItem.title = textField.text!
                         newItem.dateCreated = Date()
-                        newItem.hexItemColor = UIColor(randomFlatColorOf: .light).hexValue()
                         currentCategory.item.append(newItem)
                     }
                 } catch {
