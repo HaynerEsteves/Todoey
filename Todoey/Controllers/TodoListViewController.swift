@@ -15,6 +15,10 @@ class TodoListViewController: SwipeTableViewController {
     var todoItems: Results<Item>?
     let realm = try! Realm()
     
+    
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    
     var selectedCategory: Category? {
         didSet {
             loadItems()
@@ -29,12 +33,22 @@ class TodoListViewController: SwipeTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         
         
-        if let safeCategory = selectedCategory?.hexCategoryColor {
+        if let safeHexColor = selectedCategory?.hexCategoryColor {
             
             guard let navBar = navigationController?.navigationBar else {fatalError("Navigation controler does not exist")}
-            navBar.backgroundColor = UIColor(hexString: safeCategory)
-            title = selectedCategory!.name
             
+            
+            if let safeColor = UIColor(hexString: safeHexColor) {
+                
+                navBar.backgroundColor = safeColor
+                navBar.tintColor = ContrastColorOf(safeColor, returnFlat: true)
+                title = selectedCategory!.name
+                searchBar.barTintColor = safeColor
+                navBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: ContrastColorOf(safeColor, returnFlat: true)]
+                
+            }
+            
+
         } else {
             print("erro loading color on navBar ViewDidLoad")
         }
@@ -129,11 +143,19 @@ class TodoListViewController: SwipeTableViewController {
             }
         }
         
+        
         //adding the button to the alert
         alert.addAction(action)
         
         //presenting the textfield to the user
-        present(alert, animated: true)
+        present(alert, animated: true) {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissAlertController))
+            alert.view.superview?.subviews[0].addGestureRecognizer(tapGesture)
+        }
+    }
+    
+    @objc func dismissAlertController(){
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: - Data Manipulation

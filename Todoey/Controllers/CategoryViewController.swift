@@ -26,6 +26,7 @@ class CategoryViewController: SwipeTableViewController {
     override func viewWillAppear(_ animated: Bool) {
         guard let navBar = navigationController?.navigationBar else {fatalError("Erro setting color to navigation bar")}
         navBar.backgroundColor = .systemBrown
+        
     }
     
     //MARK: - TableView DataSource Methods
@@ -88,7 +89,14 @@ class CategoryViewController: SwipeTableViewController {
         }
         
         alert.addAction(action)
-        present(alert, animated: true)
+        present(alert, animated: true) {
+            let tapGesture = UITapGestureRecognizer(target: self, action: #selector(self.dismissAlert))
+            alert.view.superview?.subviews[0].addGestureRecognizer(tapGesture)
+        }
+    }
+    
+    @objc func dismissAlert(){
+        self.dismiss(animated: true, completion: nil)
     }
     
     //MARK: - Data Manipulation
